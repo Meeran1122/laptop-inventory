@@ -1,0 +1,49 @@
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
+
+from app.core.database import get_db
+from app.dependencies.auth import get_current_user, require_admin
+from app.models.user import User
+from app.schemas.category import CategoryCreate, CategoryOut, CategoryUpdate
+from app.services import category_service
+
+router = APIRouter(prefix="/categories", tags=["Categories"])
+
+
+@router.get("", response_model=dict, status_code=status.HTTP_200_OK)
+def list_categories(
+    db: Annotated[Session, Depends(get_db)],
+    _current_user: Annotated[User, Depends(get_current_user)],
+) -> dict:
+    categories = category_service.list_categories(db)
+    return {"items": [CategoryOut.model_validate(c) for c in categories], "total": len(categories)}
+
+
+@router.post("", response_model=CategoryOut, status_code=status.HTTP_201_CREATED)
+def create_category(
+    payload: CategoryCreate,
+    db: Annotated[Session, Depends(get_db)],
+    _current_admin: Annotated[User, Depends(require_admin)],
+):
+    return category_service.create_category(db, payload)
+
+
+@router.put("/{category_id}", response_model=CategoryOut, status_code=status.HTTP_200_OK)
+def update_category(
+    category_id: int,
+    payload: CategoryUpdate,
+    db: Annotated[Session, Depends(get_db)],
+    _current_admin: Annotated[User, Depends(require_admin)],
+):
+    return category_service.update_category(db, category_id, payload)
+
+
+@router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_category(
+    category_id: int,
+    db: Annotated[Session, Depends(get_db)],
+    _current_admin: Annotated[User, Depends(require_admin)],
+) -> None:
+    category_service.delete_category(db, category_id)
