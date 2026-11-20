@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Download, FileText, AlertTriangle, TrendingUp, Package } from 'lucide-react';
-
+import { Download, FileText, TrendingUp, Package } from 'lucide-react';
 import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
 import Card from '../components/common/Card';
