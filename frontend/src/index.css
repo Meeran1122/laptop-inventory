@@ -19,3 +19,19 @@ aside {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+@media print {
+  /* Hide everything except the invoice */
+  body * {
+    visibility: hidden;
+  }
+  .print\:p-8, .print\:p-8 * {
+    visibility: visible;
+  }
+  .print\:p-8 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
